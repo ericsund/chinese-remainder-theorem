@@ -1,5 +1,21 @@
+import sys
+
 a = [0, 0, 1, 6]
 m = [2, 3, 5, 7]
+
+# displays the equation to solve
+def print_original(a, m):
+    print("System of congruences:")
+    for i in range(len(a)):
+        print("x <congruent> " + str(a[i]) + " (mod) " + str(m[i]))
+    print("-----------------------")
+
+# displays the revised equation to solve
+def print_revised(M_i, m):
+    print("Revised system:")
+    for i in range(len(a)):
+        print(str(int(M_i[i])) + "y_" + str(i+1) + " <congruent> 1 (mod) " + str(m[i]))
+    print("-----------------------")
 
 def gcd(a, b):
     if (b == 0):
@@ -27,6 +43,8 @@ def validate(a, m):
     if len(a) != len(m):
         print("Make sure you have as many a_i as m_i")
         return 1
+    
+    return 0
 
 def crt(a, m):
     # compute big M
@@ -43,24 +61,22 @@ def crt(a, m):
         print("M_" + str(i) + " = " + str(M_i[i]))
     print("\n")
 
-    # solve each congruence equation
+    print_revised(M_i, m)
 
-    # for this new a list, make it the least positive residue
-    # at the same time, compute a particular solution with n = 1 for simplicity
-
-    # note: when we rewrite the equations, initially our new a list contains all 1s, so we don't really
-    # need to initialize a new list since we'll just be multiplying each item in the m list by 1
+    # solve each new congruence equation
 
     particular_sols = []
     for i in range(len(m)):
         # reduce the current congruence to something smaller
         reduced_m = ( M_i[i] % m[i] )
 
+        print("(" + str(i+1) + ") reduced to:\t" + str(int(reduced_m)) + "y_" + str(i+1) + " <congruent> 1 (mod) " + str(m[i]))
+
         # find a solution to the reduced, simpler congruence
         y = 0
         while y < m[i]:
             if (reduced_m * y) % m[i] == 1:
-                print("y_" + str(i+1) + " = " + str(y))
+                print("(" + str(i+1) + ") solution: \ty_" + str(i+1) + " = " + str(y))
                 particular_sols.append(y)
             y += 1
 
@@ -74,5 +90,8 @@ def crt(a, m):
     print("Unique solution x" + " (" + str(x) + ") modulo M (" + str(M) + ") ===> " + str(x % M))
 
 # MAIN
-validate(a, m)
+if validate(a, m) == 1:
+    sys.exit(1)
+
+print_original(a, m)
 crt(a, m)
