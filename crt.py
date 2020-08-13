@@ -1,5 +1,5 @@
-a = [1, 2, 3]
-m = [2, 3, 5]
+a = [0, 0, 1, 6]
+m = [2, 3, 5, 7]
 
 def gcd(a, b):
     if (b == 0):
@@ -7,7 +7,7 @@ def gcd(a, b):
     else:
         return gcd(b, a % b)
 
-def validate(m):
+def validate(a, m):
     # check if m_i are all coprime
     if len(m) >= 2:
         i = 0
@@ -33,11 +33,15 @@ def crt(a, m):
     M = 1
     for i in m:
         M *= i
+    print("Big M: " + str(M))
     
     #compute big M_i
     M_i = []
     for i in m:
         M_i.append( M/i )
+    for i in range(len(M_i)):
+        print("M_" + str(i) + " = " + str(M_i[i]))
+    print("\n")
 
     # solve each congruence equation
 
@@ -47,23 +51,28 @@ def crt(a, m):
     # note: when we rewrite the equations, initially our new a list contains all 1s, so we don't really
     # need to initialize a new list since we'll just be multiplying each item in the m list by 1
 
-    print("CRT gives new system of congruence equations:")
-
     particular_sols = []
-    for i in range(len(a)):
-        # new least positive redidue
-        reduced_a = ( M_i[i] % m[i] )
-        print("y_" + str(i) + " <congruent> " + str(reduced_a) + " (mod " + str(m[i]) + ")" )
-        # compute new particular solution
-        particular_sols.append(m[i] + reduced_a)
+    for i in range(len(m)):
+        # reduce the current congruence to something smaller
+        reduced_m = ( M_i[i] % m[i] )
+
+        # find a solution to the reduced, simpler congruence
+        y = 0
+        while y < m[i]:
+            if (reduced_m * y) % m[i] == 1:
+                print("y_" + str(i+1) + " = " + str(y))
+                particular_sols.append(y)
+            y += 1
 
     x = 0
     print("------------")
     for i in range(len(particular_sols)):
         print("x += " + str(a[i]) + " * " + str(M_i[i]) + " * " + str(particular_sols[i]))
         x += a[i] * M_i[i] * particular_sols[i]
+        print("x = " + str(x))
     
-    print("Unique solution modulo M = : " + str(M) + " ===> " + str(x % M))
+    print("Unique solution x" + " (" + str(x) + ") modulo M (" + str(M) + ") ===> " + str(x % M))
 
 # MAIN
+validate(a, m)
 crt(a, m)
